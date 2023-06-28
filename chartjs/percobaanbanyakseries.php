@@ -1,153 +1,80 @@
 <?php
 // Buat koneksi ke database
-$conn = mysqli_connect("localhost", "root", "", "plant_net");
+$conn = mysqli_connect("localhost", "root", "", "ecomm");
 
 // Query SQL pertama
 $query1 = "
-    SELECT
-        CASE 
-            WHEN bulan_referensi.bulan = 1 THEN 'Januari'
-            WHEN bulan_referensi.bulan = 2 THEN 'Februari'
-            WHEN bulan_referensi.bulan = 3 THEN 'Maret'
-            WHEN bulan_referensi.bulan = 4 THEN 'April'
-            WHEN bulan_referensi.bulan = 5 THEN 'Mei'
-            WHEN bulan_referensi.bulan = 6 THEN 'Juni'
-            WHEN bulan_referensi.bulan = 7 THEN 'Juli'
-            WHEN bulan_referensi.bulan = 8 THEN 'Agustus'
-            WHEN bulan_referensi.bulan = 9 THEN 'September'
-            WHEN bulan_referensi.bulan = 10 THEN 'Oktober'
-            WHEN bulan_referensi.bulan = 11 THEN 'November'
-            WHEN bulan_referensi.bulan = 12 THEN 'Desember'
-        END AS bulan,
-        COALESCE(SUM(pesananproduk.jumlah_pesanan_produk), 0) AS total_penjualan
-    FROM (
-        SELECT 1 AS bulan
-        UNION SELECT 2
-        UNION SELECT 3
-        UNION SELECT 4
-        UNION SELECT 5
-        UNION SELECT 6
-        UNION SELECT 7
-        UNION SELECT 8
-        UNION SELECT 9
-        UNION SELECT 10
-        UNION SELECT 11
-        UNION SELECT 12
-    ) AS bulan_referensi
-    LEFT JOIN pesananproduk ON MONTH(pesananproduk.order_time_product) = bulan_referensi.bulan
-        AND pesananproduk.produk_id BETWEEN 1 AND 10
-    GROUP BY bulan_referensi.bulan;
+SELECT
+months.month,
+products.category_id,
+COALESCE(SUM(details.quantity), 0) AS total_penjualan
+FROM (
+SELECT 1 AS month UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8
+UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12
+) AS months
+JOIN products
+LEFT JOIN sales ON MONTH(sales.sales_date) = months.month
+LEFT JOIN details ON details.sales_id = sales.id
+AND details.product_id = products.id
+WHERE products.category_id = 1
+GROUP BY months.month, products.category_id;
 ";
 
-// Query SQL kedua
 $query2 = "
-    SELECT
-        CASE 
-            WHEN bulan_referensi.bulan = 1 THEN 'Januari'
-            WHEN bulan_referensi.bulan = 2 THEN 'Februari'
-            WHEN bulan_referensi.bulan = 3 THEN 'Maret'
-            WHEN bulan_referensi.bulan = 4 THEN 'April'
-            WHEN bulan_referensi.bulan = 5 THEN 'Mei'
-            WHEN bulan_referensi.bulan = 6 THEN 'Juni'
-            WHEN bulan_referensi.bulan = 7 THEN 'Juli'
-            WHEN bulan_referensi.bulan = 8 THEN 'Agustus'
-            WHEN bulan_referensi.bulan = 9 THEN 'September'
-            WHEN bulan_referensi.bulan = 10 THEN 'Oktober'
-            WHEN bulan_referensi.bulan = 11 THEN 'November'
-            WHEN bulan_referensi.bulan = 12 THEN 'Desember'
-        END AS bulan,
-        COALESCE(SUM(pesananproduk.jumlah_pesanan_produk), 0) AS total_penjualan
-    FROM (
-        SELECT 1 AS bulan
-        UNION SELECT 2
-        UNION SELECT 3
-        UNION SELECT 4
-        UNION SELECT 5
-        UNION SELECT 6
-        UNION SELECT 7
-        UNION SELECT 8
-        UNION SELECT 9
-        UNION SELECT 10
-        UNION SELECT 11
-        UNION SELECT 12
-    ) AS bulan_referensi
-    LEFT JOIN pesananproduk ON MONTH(pesananproduk.order_time_product) = bulan_referensi.bulan
-        AND pesananproduk.produk_id BETWEEN 11 AND 15
-    GROUP BY bulan_referensi.bulan;
+SELECT
+months.month,
+products.category_id,
+COALESCE(SUM(details.quantity), 0) AS total_penjualan
+FROM (
+SELECT 1 AS month UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8
+UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12
+) AS months
+JOIN products
+LEFT JOIN sales ON MONTH(sales.sales_date) = months.month
+LEFT JOIN details ON details.sales_id = sales.id
+AND details.product_id = products.id
+WHERE products.category_id = 2
+GROUP BY months.month, products.category_id;
 ";
 
 // Query SQL ke-3
 $query3 = "
-    SELECT
-        CASE 
-            WHEN bulan_referensi.bulan = 1 THEN 'Januari'
-            WHEN bulan_referensi.bulan = 2 THEN 'Februari'
-            WHEN bulan_referensi.bulan = 3 THEN 'Maret'
-            WHEN bulan_referensi.bulan = 4 THEN 'April'
-            WHEN bulan_referensi.bulan = 5 THEN 'Mei'
-            WHEN bulan_referensi.bulan = 6 THEN 'Juni'
-            WHEN bulan_referensi.bulan = 7 THEN 'Juli'
-            WHEN bulan_referensi.bulan = 8 THEN 'Agustus'
-            WHEN bulan_referensi.bulan = 9 THEN 'September'
-            WHEN bulan_referensi.bulan = 10 THEN 'Oktober'
-            WHEN bulan_referensi.bulan = 11 THEN 'November'
-            WHEN bulan_referensi.bulan = 12 THEN 'Desember'
-        END AS bulan,
-        COALESCE(SUM(pesananproduk.jumlah_pesanan_produk), 0) AS total_penjualan
-    FROM (
-        SELECT 1 AS bulan
-        UNION SELECT 2
-        UNION SELECT 3
-        UNION SELECT 4
-        UNION SELECT 5
-        UNION SELECT 6
-        UNION SELECT 7
-        UNION SELECT 8
-        UNION SELECT 9
-        UNION SELECT 10
-        UNION SELECT 11
-        UNION SELECT 12
-    ) AS bulan_referensi
-    LEFT JOIN pesananproduk ON MONTH(pesananproduk.order_time_product) = bulan_referensi.bulan
-        AND pesananproduk.produk_id BETWEEN 16 AND 23
-    GROUP BY bulan_referensi.bulan;
+SELECT
+months.month,
+products.category_id,
+COALESCE(SUM(details.quantity), 0) AS total_penjualan
+FROM (
+SELECT 1 AS month UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8
+UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12
+) AS months
+JOIN products
+LEFT JOIN sales ON MONTH(sales.sales_date) = months.month
+LEFT JOIN details ON details.sales_id = sales.id
+AND details.product_id = products.id
+WHERE products.category_id = 3
+GROUP BY months.month, products.category_id;
 ";
 
 // Query SQL ke-4
 $query4 = "
-    SELECT
-        CASE 
-            WHEN bulan_referensi.bulan = 1 THEN 'Januari'
-            WHEN bulan_referensi.bulan = 2 THEN 'Februari'
-            WHEN bulan_referensi.bulan = 3 THEN 'Maret'
-            WHEN bulan_referensi.bulan = 4 THEN 'April'
-            WHEN bulan_referensi.bulan = 5 THEN 'Mei'
-            WHEN bulan_referensi.bulan = 6 THEN 'Juni'
-            WHEN bulan_referensi.bulan = 7 THEN 'Juli'
-            WHEN bulan_referensi.bulan = 8 THEN 'Agustus'
-            WHEN bulan_referensi.bulan = 9 THEN 'September'
-            WHEN bulan_referensi.bulan = 10 THEN 'Oktober'
-            WHEN bulan_referensi.bulan = 11 THEN 'November'
-            WHEN bulan_referensi.bulan = 12 THEN 'Desember'
-        END AS bulan,
-        COALESCE(SUM(pesananproduk.jumlah_pesanan_produk), 0) AS total_penjualan
-    FROM (
-        SELECT 1 AS bulan
-        UNION SELECT 2
-        UNION SELECT 3
-        UNION SELECT 4
-        UNION SELECT 5
-        UNION SELECT 6
-        UNION SELECT 7
-        UNION SELECT 8
-        UNION SELECT 9
-        UNION SELECT 10
-        UNION SELECT 11
-        UNION SELECT 12
-    ) AS bulan_referensi
-    LEFT JOIN pesananproduk ON MONTH(pesananproduk.order_time_product) = bulan_referensi.bulan
-        AND pesananproduk.produk_id BETWEEN 24 AND 27
-    GROUP BY bulan_referensi.bulan;
+SELECT
+months.month,
+products.category_id,
+COALESCE(SUM(details.quantity), 0) AS total_penjualan
+FROM (
+SELECT 1 AS month UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8
+UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12
+) AS months
+JOIN products
+LEFT JOIN sales ON MONTH(sales.sales_date) = months.month
+LEFT JOIN details ON details.sales_id = sales.id
+AND details.product_id = products.id
+WHERE products.category_id = 4
+GROUP BY months.month, products.category_id;
 ";
 
 // Eksekusi query pertama

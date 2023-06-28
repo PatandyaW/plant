@@ -1,42 +1,24 @@
 <?php
 // Buat koneksi ke database
-$conn = mysqli_connect("localhost", "root", "", "plant_net");
+$conn = mysqli_connect("localhost", "root", "", "ecomm");
 
 // Query SQL
 $query = "
-    SELECT
-        CASE 
-            WHEN bulan_referensi.bulan = 1 THEN 'Januari'
-            WHEN bulan_referensi.bulan = 2 THEN 'Februari'
-            WHEN bulan_referensi.bulan = 3 THEN 'Maret'
-            WHEN bulan_referensi.bulan = 4 THEN 'April'
-            WHEN bulan_referensi.bulan = 5 THEN 'Mei'
-            WHEN bulan_referensi.bulan = 6 THEN 'Juni'
-            WHEN bulan_referensi.bulan = 7 THEN 'Juli'
-            WHEN bulan_referensi.bulan = 8 THEN 'Agustus'
-            WHEN bulan_referensi.bulan = 9 THEN 'September'
-            WHEN bulan_referensi.bulan = 10 THEN 'Oktober'
-            WHEN bulan_referensi.bulan = 11 THEN 'November'
-            WHEN bulan_referensi.bulan = 12 THEN 'Desember'
-        END AS bulan,
-        COALESCE(SUM(pesananproduk.jumlah_pesanan_produk), 0) AS total_penjualan
-    FROM (
-        SELECT 1 AS bulan
-        UNION SELECT 2
-        UNION SELECT 3
-        UNION SELECT 4
-        UNION SELECT 5
-        UNION SELECT 6
-        UNION SELECT 7
-        UNION SELECT 8
-        UNION SELECT 9
-        UNION SELECT 10
-        UNION SELECT 11
-        UNION SELECT 12
-    ) AS bulan_referensi
-    LEFT JOIN pesananproduk ON MONTH(pesananproduk.order_time_product) = bulan_referensi.bulan
-        AND pesananproduk.produk_id BETWEEN 1 AND 10
-    GROUP BY bulan_referensi.bulan;
+SELECT 
+CASE
+	WHEN MONTH(sales.sales_date) = 1 THEN 'Januari'
+    WHEN MONTH(sales.sales_date) = 2 THEN 'Februari'
+    WHEN MONTH(sales.sales_date) = 3 THEN 'Maret'
+    WHEN MONTH(sales.sales_date) = 4 THEN 'April'
+    WHEN MONTH(sales.sales_date) = 5 THEN 'Mei'
+    WHEN MONTH(sales.sales_date) = 6 THEN 'Juni'
+    WHEN MONTH(sales.sales_date) = 7 THEN 'Juli'
+    WHEN MONTH(sales.sales_date) = 8 THEN 'Agustus'
+    WHEN MONTH(sales.sales_date) = 9 THEN 'September'
+    WHEN MONTH(sales.sales_date) = 10 THEN 'Oktober'
+    WHEN MONTH(sales.sales_date) = 11 THEN 'November'
+    WHEN MONTH(sales.sales_date) = 12 THEN 'Desember'
+    END AS Month,SUM(details.quantity) AS Total FROM details JOIN sales ON details.sales_id=sales.id GROUP BY MONTH(sales.sales_date);
 ";
 
 // Eksekusi query
@@ -52,8 +34,8 @@ while ($row = mysqli_fetch_assoc($result)) {
 mysqli_close($conn);
 
 // Ekstraksi bulan dan total penjualan
-$bulan = array_column($data, 'bulan');
-$total_penjualan = array_column($data, 'total_penjualan');
+$bulan = array_column($data, 'Month');
+$total_penjualan = array_column($data, 'Total');
 
 // Membuat bar chart menggunakan Chart.js
 ?>
@@ -73,7 +55,7 @@ $total_penjualan = array_column($data, 'total_penjualan');
             data: {
                 labels: <?php echo json_encode($bulan); ?>,
                 datasets: [{
-                    label: 'Total Penjualan',
+                    label: 'Total Penjualan Bulanan (Unit)',
                     data: <?php echo json_encode($total_penjualan); ?>,
                     backgroundColor: 'rgba(54, 162, 235, 0.5)',
                     borderColor: 'rgba(54, 162, 235, 1)',
